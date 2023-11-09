@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    z-index: 1000;
+}
+
+.button-container {
+
+    position: absolute;
+    text-align: center;
+    bottom: 100px; /* 调整底部距离，根据需要自行修改 */
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.glass-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.glass-button:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.05);
+    z-index: 1000;
+}
+
+#left-button {
+    background-color: rgba(50, 150, 255, 0.8);
+    z-index: 1000;
+}
+
+#right-button {
+    background-color: rgba(255, 100, 100, 0.8);
+    z-index: 1000;
+}

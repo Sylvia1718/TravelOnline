@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>瀑布流布局</title>
+    <meta name='viewport' content='width=device-width,initial-scale=1.0,user-scalable=no' />
+    <link rel="stylesheet" type="text/css" href="waterfall.css">
+    <style>
+        html{
+            font-size: 12px;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #buttonUpload{
+            position: absolute; /* 绝对定位 */
+            top: 30px; /* 与顶部的距离 */
+            left: 200px; /* 与左侧的距离 */
+            background-color: #0074a2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 5px; /* 边框圆角 */
+            font-size: 24px; /* 文字大小 */
+            z-index:1000;
+            opacity: 0.8; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 160px; /* 设置按钮宽度 */
+            height: 70px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+        #buttonMap{
+            position: absolute; /* 绝对定位 */
+            top: 30px; /* 与顶部的距离 */
+            left: 400px; /* 与左侧的距离 */
+            background-color: #0074a2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 5px; /* 边框圆角 */
+            font-size: 24px; /* 文字大小 */
+            z-index:1000;
+            opacity: 0.8; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 160px; /* 设置按钮宽度 */
+            height: 70px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+    </style>
+</head>
+<body>
+    <h1>个性化推荐</h1>
+    <button id="buttonUpload">我要发帖</button>
+    <button id="buttonMap">返回地图</button>
+    <h1>你肯定不想错过这些地方</h1>
+    <div class="masonry" id="masonryContainer">
+      <!-- This is an empty container where we'll add the dynamically created div elements -->
+    </div>
+
+    <script>
+        var lng = localStorage.getItem("lng");
+        var lat = localStorage.getItem("lat");
+
+      // Simulated data with  URLs
+        var buttonUpload = document.getElementById("buttonUpload");
+        var buttonMap = document.getElementById("buttonMap");
+
+      const masonryContainer = document.getElementById('masonryContainer');
+
+
+        buttonUpload.addEventListener('click',function (){
+            localStorage.setItem("lng",lng);
+            localStorage.setItem("lat",lat);
+            window.location.href = "upload.html";
+        })
+
+        buttonMap.addEventListener('click',function (){
+            localStorage.setItem("lng",lng);
+            localStorage.setItem("lat",lat);
+            window.location.href = "showSigned.html";
+        })
+        var markerData = {
+            lng:lng,
+            lat:lat
+        };
+        fetch('/api/guests/passages', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(markerData)
+    	})
+        .then(response => {
+            if (response.status == 200) {
+                return response.json();
+            } else {
+                throw new Error('失败');
+            }
+        })
+        .then(data =>{
+            data.forEach(Url => {
+                var divElement = document.createElement('div');
+                divElement.classList.add('item');
+
+                var imgElement = document.createElement('img');
+                imgElement.src = Url.image;
+
+                var h2Element = document.createElement('h2');
+                h2Element.textContent = Url.title;
+
+                var pElement = document.createElement('p');
+                pElement.textContent = Url.depict;
+
+                divElement.appendChild(imgElement);
+                divElement.appendChild(h2Element);
+                divElement.appendChild(pElement);
+                masonryContainer.appendChild(divElement);
+            })
+        })
+        .catch(error => {// 处理失败或请求错误
+            alert("失败");
+        });
+
+        /*var divElement = document.createElement('div');
+        divElement.classList.add('item');
+
+        var imgElement = document.createElement('img');
+        imgElement.src = "https://gitee.com/Dangerhzh/images/raw/master/demo/ac145c61-d391-41c1-a8e0-10e9fe6efa0b.jpg"
+        ;
+
+        var h2Element = document.createElement('h2');
+        h2Element.textContent = "1";
+
+        var pElement = document.createElement('p');
+        pElement.textContent = "2";
+
+        divElement.appendChild(imgElement);
+        divElement.appendChild(h2Element);
+        divElement.appendChild(pElement);
+        masonryContainer.appendChild(divElement);*/
+
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet"><link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css'>
+
+	<style>
+		#image1{
+			position: absolute;
+			height:15%;
+			left:27.6%;
+			bottom:59.5%;
+		}
+		#image2{
+			position: absolute;
+			height:15%;
+			left:27.6%;
+			bottom:63%;
+		}
+		.title1{
+			color: #3c9bc4;
+		}
+	</style>
+</head>
+
+<body>
+
+
+<div class="container" id="container">
+	<div class="form-container sign-up-container">
+		<form action="#">
+			<h1>创建账户</h1>
+			<h3 class="title1">游&nbsp;迹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cloudtraveller</h3>
+			<image id="image2" src="1.png"/>
+			<input type="text" id="textUp" placeholder="在这里输入用户名" />
+			<input type="email" id="emailUp" placeholder="在这里输入邮箱" />
+			<input type="password" id="passwordUp" placeholder="在这里输入密码" />
+			<span>&nbsp;</span>
+			<span>&nbsp;</span>
+			<button id="buttonSignup">注&nbsp;&nbsp;册</button>
+		</form>
+	</div>
+	<div class="form-container sign-in-container">
+		<form action="#">
+			<h1>登&nbsp;&nbsp;录</h1>
+			<h3 class="title1">游&nbsp;迹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cloudtraveller</h3>
+			<image id="image1" src="1.png"/>
+			<input type="text" id="textIn" placeholder="在这里输入用户名" />
+			<input type="password" id="passwordIn" placeholder="在这里输入密码" />
+			<a href="#" id="forget">忘记密码了?</a>
+			<button id="buttonSignin">登&nbsp;&nbsp;录</button>
+		</form>
+	</div>
+	<div class="overlay-container">
+		<div class="overlay">
+			<div class="overlay-panel overlay-left">
+				<h1>注册好了吗</h1>
+				<p>如果注册好了，就快点登录游迹吧</p>
+				<button class="ghost" id="signIn">去&nbsp;登&nbsp;录</button>
+			</div>
+			<div class="overlay-panel overlay-right">
+				<h1>&nbsp;&nbsp;第一次来？</h1>
+				<p>快点来这里创建一个自己的游迹账户吧</p>
+				<button class="ghost" id="signUp">去&nbsp;注&nbsp;册</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="script.js" charset="utf-8"></script>
+<script>
+	const buttonSignUp = document.getElementById('buttonSignup');
+	const buttonSignIn = document.getElementById('buttonSignin');
+
+	var forgetClicked = 0;//忘记密码被点击则变为0
+
+	const forget = document.getElementById('forget');
+	forget.addEventListener('click',function (){
+		document.getElementById("passwordIn").value = "";
+		// 获取<input>元素的引用
+		var inputElement = document.getElementById("passwordIn");
+		// 修改type属性为"password"
+		//inputElement.type = "password";
+		// 修改id属性为"newId"
+		//inputElement.id = "newId";
+		// 修改placeholder属性为"新占位符"
+		if(forgetClicked == 0){
+			inputElement.placeholder = "在这里输入密保邮箱";
+			forgetClicked = 1;
+			// 获取带有ID为"forget"的链接元素
+			var forgetLink = document.getElementById("forget");
+			// 修改链接元素的内容
+			forgetLink.textContent = "想起密码了！";
+
+		}
+		else if(forgetClicked == 1){
+			inputElement.placeholder = "在这里输入密码";
+			forgetClicked = 0;
+			// 获取带有ID为"forget"的链接元素
+			var forgetLink = document.getElementById("forget");
+			// 修改链接元素的内容
+			forgetLink.textContent = "忘记密码了？";
+
+		}
+
+	})
+
+	buttonSignUp.addEventListener('click',function (){
+		const userIdUp = document.getElementById('textUp').value;
+		const passwordUp = document.getElementById('passwordUp').value;
+		const emailUp = document.getElementById('emailUp').value;
+		const signUpData = {
+			username:userIdUp,
+			password:passwordUp,
+			email:emailUp
+		};//注册
+		fetch('/api/users/signup', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+      			},
+      		body: JSON.stringify(signUpData)
+    	})
+            .then(response => {
+              if (response.status === 200) {
+				  return response.json(); // 解析 JSON 数据
+              } else {
+                throw new Error('注册失败');
+              }
+            })
+			.then(data => {
+				if(data.username == signUpData.username)
+  				alert("注册成功");
+			})
+			.catch(error => {
+              // 处理注册失败或请求错误
+              alert("注册失败");
+            });
+  	});
+
+
+
+
+	buttonSignIn.addEventListener('click',function (){
+		const userIdIn = document.getElementById('textIn').value;
+		const passwordIn = document.getElementById('passwordIn').value;
+		if(forgetClicked == 0){
+			const signInData = {
+				username:userIdIn,
+				password:passwordIn
+			};//密码登录
+			fetch('/api/users/loginpw', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+      			},
+      		body: JSON.stringify(signInData)
+    		})
+            .then(response => {
+              if (response.status==200) {
+				    //alert(response.status);
+				  	alert("登录成功");
+				  	localStorage.setItem("username",signInData.username);
+				  	//	localStorage.setItem("userID",data.userId);
+				  	window.location.href = "indexSigned.html";
+					//window.location.href = "indexSigned.html";
+
+              } else {
+				  //window.location.href = "indexSigned.html";
+                throw new Error('登录失败');
+              }
+            })
+
+
+		}
+		else if(forgetClicked == 1){
+			const passwordForgotten = {
+				username:userIdIn,
+				email:passwordIn
+			};//密码登录
+			fetch('/api/users/loginem', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+      			},
+      		body: JSON.stringify(passwordForgotten)
+    		})
+            .then(response => {
+				if (response.status === 200) {
+    				return response.json(); // 解析 JSON 数据
+  				} else {
+    				throw new Error('登录失败');
+  				}
+			})
+			.then(data => {
+  				alert("登录成功，您的密码是 " + data.password + "，请牢记");
+  				localStorage.setItem("username", passwordForgotten.username);
+				//localStorage.setItem("userID",data.userId);
+  				window.location.href = "indexSigned.html";
+			})
+			.catch(error => {
+              // 处理登录失败或请求错误
+              alert("登录失败");
+			  //window.location.href = "indexSigned.html";
+            });
+		}
+
+
+	})
+
+
+
+
+
+</script>
+</body>
+
+</html>

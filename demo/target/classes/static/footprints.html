@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>个人主页</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta name='viewport' content='width=device-width,initial-scale=1.0,user-scalable=no' />
+    <link rel="stylesheet" type="text/css" href="waterfallhome.css">
+    <style>
+
+        #container1{
+            height:65%;
+            width: 96%;
+            left:2%;
+            border-radius: 25px;
+            box-shadow: 8px 8px 12px rgba(0, 0, 0, 0.1);
+        }
+        body{
+            padding-top: 15px;
+            width: 100%;
+            height: 100%;
+            background-color:rgb(243, 242, 242);
+        }
+        html{
+            height:100%;
+            width: 100%;
+            font-size: 12px;
+        }
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .aboutyou{
+          font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          letter-spacing: 15px;
+            text-align: center;
+            color: rgb(128, 128, 128);
+            font-size: 64px;
+            font-weight: 100;
+        }
+        #you{
+          font-size: 82px;
+        }
+        .img{
+          border-radius: 10px;
+          box-shadow: 8px 8px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <h1 class="aboutyou" id="here">Here&nbsp;Is&nbsp;Your</h1>
+    <span>&nbsp;</span>
+    <div id="container1"></div>
+    <span>&nbsp;</span>
+    
+    <h1 class="aboutyou" id="you">Footprints</h1>
+    <span>&nbsp;</span>
+    <div class="masonry" id="masonryContainer"></div>
+</body>
+<script type="text/javascript"
+    src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=tg72P5G7323hTWbtxkAEMPqD9Gw7DSz7"></script>
+<script>
+    //alert(1);
+    var username = localStorage.getItem("username");
+    var userID =  localStorage.getItem("userID");
+    var map = new BMapGL.Map("container1");
+    var point = new BMapGL.Point(116.404, 39.915);
+    map.centerAndZoom(point, 3);
+    map.enableScrollWheelZoom(true);
+    
+    /*function createMarker(map,lng,lat) {
+    var point = new BMapGL.Point(lng,lat);
+    var marker = new BMapGL.Marker(point);
+    map.addOverlay(marker);
+    marker.addEventListener("click", function () {
+        localStorage.setItem("lng",lng);
+        localStorage.setItem("lat",lat);
+        delayedScrollToSection();
+        
+    });
+    }
+    createMarker(map,120.404, 39.915);
+    createMarker(map,118.404, 39.915);
+    createMarker(map,119.404, 39.915);
+    createMarker(map,116.404, 39.915);
+    createMarker(map,117.404, 39.915);
+    */
+    const masonryContainer = document.getElementById('masonryContainer');
+    var markerData = {
+        lng:localStorage.getItem("lng"),
+        lat:localStorage.getItem("lat"),
+        username: username
+    };
+    const username1 = {
+        username: username
+    };
+    //alert("0");
+    fetch('/api/passages/getAllByUser', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(username1)
+    	})
+        .then(response => {
+            if (response.status == 200) {
+                //alert("1");
+                return response.json();
+            } else {
+                throw new Error('失败');
+            }
+        })
+        .then(data =>{
+            data.forEach(coordinate => {
+                //alert("2");
+                var point = new BMapGL.Point(coordinate.lng,coordinate.lat);
+                var marker = new BMapGL.Marker(point);
+                map.addOverlay(marker);
+                //alert(coordinate.lat);
+                marker.addEventListener("click", function () {
+                    masonryContainer.innerHTML = '';
+                    localStorage.setItem("lng",coordinate.lng);
+
+                    localStorage.setItem("lat",coordinate.lat);
+                    markerData.lng = localStorage.getItem("lng");
+                    markerData.lat = localStorage.getItem("lat");
+                    innerFetch();
+                    delayedScrollToSection();
+                });
+            })
+        })
+        .catch(error => {// 处理失败或请求错误
+            alert("失败");
+        });
+
+    function innerFetch(){
+        fetch('/api/users/passages', {
+      		method: 'POST',
+      		headers: {
+        	'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(markerData)
+    	})
+        .then(response => {
+            if (response.status == 200) {
+                return response.json();
+            } else {
+                throw new Error('失败');
+            }
+        })
+        .then(data =>{
+            data.forEach(Url => {
+                var divElement = document.createElement('div');
+                divElement.classList.add('item');
+
+                var imgElement = document.createElement('img');
+                imgElement.src = Url.image;
+                imgElement.class = "img";
+
+                var h2Element = document.createElement('h2');
+                h2Element.textContent = Url.title;
+
+                var pElement = document.createElement('p');
+                pElement.textContent = Url.depict;
+
+                divElement.appendChild(imgElement);
+                divElement.appendChild(h2Element);
+                divElement.appendChild(pElement);
+                masonryContainer.appendChild(divElement);
+            })
+        })
+        .catch(error => {// 处理失败或请求错误
+            alert("失败");
+        });
+    }
+    function delayedScrollToSection() {
+            setTimeout(function () {
+                var targetSection = document.getElementById('masonryContainer');
+                var targetPosition = targetSection.offsetTop;
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }, 250); //ms
+        }
+
+</script>
+</html>

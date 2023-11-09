@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<link rel="stylesheet" type="text/css" href="buttonstyles.css">
+    <style type="text/css">
+        body, html, #allmap {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            font-family: "微软雅黑";
+            position: relative;
+			z-index:1;
+        }
+
+        @keyframes shock {
+	    0% {
+	        margin-left: 15px;
+	        margin-right: 0px;
+	        margin-top: px;
+            margin-bottom: 0px;
+	    }
+        5% {
+	        margin-left: 0px;
+	        margin-right: 15px;
+	        margin-top: 0px;
+            margin-bottom: 0px;
+	    }
+        10% {
+	        margin-left: 8px;
+	        margin-right: 0px;
+	        margin-top: 0px;
+            margin-bottom: 0px;
+	    }
+        15% {
+	        margin-left: 0px;
+	        margin-right: 8px;
+	        margin-top: 0px;
+            margin-bottom: 0px;
+	    }
+        20% {
+	        margin-left: 0px;
+	        margin-right: 0px;
+	        margin-top: 0px;
+            margin-bottom: 0px;
+	    }
+	    100% {
+	        margin-left: 0px;
+	        margin-right: 0px;
+	        margin-top: 0px	;
+            margin-bottom: 0px;
+	        }
+	    }
+
+		#title1{
+            position:absolute;
+            z-index:3;
+            width: 300px;
+            height:300px;
+            bottom:500px;
+        }
+        .title2{
+            position:absolute;
+            z-index:2;
+            width: 50%;
+            bottom:400px;
+        }
+        .title2:hover{
+ 		animation-delay: 0s;
+	    animation-name: shock;
+	    animation-duration: 2.5s;
+	    animation-iteration-count: infinite;
+	    animation-direction: normal;
+	    animation-timing-function: linear;
+	}
+
+    </style>
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=tg72P5G7323hTWbtxkAEMPqD9Gw7DSz7"></script>
+    <title>地球模式</title>
+</head>
+<body>
+    <!--image id="title1" src="title1.png"-->
+    <image class="title2" src="title2.png"/>
+    <div id="allmap">
+        <!-- 添加按钮容器 -->
+        
+    </div>
+	<div class="button-container">
+		<button class="glass-button" id="left-button">进入！！！！</button>
+
+		
+	</div>
+	
+</body>
+</html>
+<script type="text/javascript">
+    var userID = localStorage.getItem("userID");
+    var map = new BMapGL.Map("allmap");
+    var aaa = 0;
+    map.centerAndZoom(new BMapGL.Point((118.5 - aaa), 27.5), 2);
+    map.enableScrollWheelZoom(true);
+    map.setMapType(BMAP_EARTH_MAP);
+    var heading = 100;
+    map.zoomOut();
+	
+    function rotateMap() {
+        map.zoomOut();
+        aaa += 2;
+        map.panTo(new BMapGL.Point((118.5 - aaa), 27.5));
+        setTimeout(rotateMap, 200);
+    }
+    rotateMap();
+
+	const clickLeft = document.getElementById("left-button");
+
+    clickLeft.addEventListener('click',function () {
+        window.location.href = "showSigned.html";
+    })
+
+</script>

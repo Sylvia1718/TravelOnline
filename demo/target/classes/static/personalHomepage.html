@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>瀑布流布局</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name='viewport' content='width=device-width,initial-scale=1.0,user-scalable=no' />
+    <link rel="stylesheet" type="text/css" href="waterfallhome.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            display: flex;
+        }
+        
+        .left-side {
+            flex: 1;
+            /*background:linear-gradient(to right, #81D8CF, #3b99c1);*/
+            background-color:white;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .right-side {
+            box-shadow: none;
+            border: none;
+            outline: none;
+            flex: 2.8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .avatar-container {
+            position: absolute;
+            left: 10px;
+            top: 170px;
+            width: 150px; /* 设置容器的宽度和高度，使其成为一个正方形 */
+            height: 150px;
+            border-radius: 50%; /* 使用border-radius属性将容器变为圆形 */
+            overflow: hidden; /* 用于隐藏超出容器的部分，确保只显示圆形区域 */
+        }
+
+        .avatar {
+            width: 100%; /* 让头像充满整个容器 */
+            height: 100%;
+            object-fit: cover; /* 用于裁剪和适应头像以填充整个容器 */
+        }
+
+        #title1 {
+            text-align: center; /* 设置文本居中对齐 */
+        }   
+
+        #image1 {
+            position: relative;
+            left: 50%;
+            transform: translate(-50%);
+            height:7%;
+        }
+
+        #username {
+            position:relative;
+            left: 0px;
+        }
+
+        #nbsp{
+            width: 50%;
+            left:20%;
+            text-align:center;
+            /*border-bottom: 1px solid rgb(6, 166, 180);*/
+        }
+        .button{
+            background-color: #56afd2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 10px; /* 边框圆角 */
+            font-size:14px; /* 文字大小 */
+            z-index:1000;
+            opacity: 1; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 100px; /* 设置按钮宽度 */
+            height: 40px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+        #buttonExit{
+            position:absolute;
+            bottom:7%;
+            left: 80px;
+        }
+        #buttonMap{
+            position:absolute;
+            bottom:7%;
+            left: 220px;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-side">
+            <span>&nbsp;</span>
+            <h1 id="title1">个&nbsp;人&nbsp;主&nbsp;页</h1>
+            <image id="image1" src="title3.png"/>
+            <div class="avatar-container">
+                <img class="avatar" src="1.png" >
+              </div>
+              <h2 id="nbsp">&nbsp;</h2>
+
+            <h2 id="username"></h2>
+            <button class="button" id="buttonExit">退出登录</button>
+            <button class="button" id="buttonMap">回到地图</button>
+        </div>
+        <div class="right-side">
+            <iframe class="right-side" id="inner" src='footprints.html'></iframe>
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript"
+    src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=tg72P5G7323hTWbtxkAEMPqD9Gw7DSz7"></script>
+<script>
+
+    var userID = localStorage.getItem("userID");
+    var username = localStorage.getItem("username");
+    var showUsername = document.getElementById("username");
+    var buttonExit = document.getElementById("buttonExit");
+    var buttonMap = document.getElementById("buttonMap");
+    showUsername.textContent = username;
+    buttonExit.addEventListener('click',function (){
+        localStorage.removeItem("username");
+        localStorage.removeItem("userID");
+        localStorage.removeItem("lng");
+        localStorage.removeItem("lat");
+        window.location.href = "indexUnsigned.html";
+    })
+    buttonMap.addEventListener('click',function(){
+        window.location.href = "showSigned.html";
+    })
+    
+    
+</script>
+</html>

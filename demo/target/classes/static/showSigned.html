@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Baidu Map </title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            height: 100%;
+        }
+
+        /* 样式定义 */
+        #custom-button {
+            position: absolute; /* 绝对定位 */
+            top: 30px; /* 与顶部的距离 */
+            left: 30px; /* 与左侧的距离 */
+            background-color: #0074a2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 5px; /* 边框圆角 */
+            font-size: 24px; /* 文字大小 */
+            z-index:1000;
+            opacity: 0.8; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 160px; /* 设置按钮宽度 */
+            height: 70px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+
+        #buttonExit{
+            position: absolute; /* 绝对定位 */
+            top: 30px; /* 与顶部的距离 */
+            left: 200px; /* 与左侧的距离 */
+            background-color: #0074a2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 5px; /* 边框圆角 */
+            font-size: 24px; /* 文字大小 */
+            z-index:1000;
+            opacity: 0.8; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 160px; /* 设置按钮宽度 */
+            height: 70px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+
+        #buttonHome {
+            position: absolute; /* 绝对定位 */
+            top: 30px; /* 与顶部的距离 */
+            left: 370px; /* 与左侧的距离 */
+            background-color: #0074a2; /* 背景颜色 */
+            color: #fff; /* 文字颜色 */
+            padding: 10px 20px; /* 内边距（上下，左右） */
+            border: none; /* 去掉边框 */
+            cursor: pointer; /* 鼠标指针样式 */
+            border-radius: 5px; /* 边框圆角 */
+            font-size: 24px; /* 文字大小 */
+            z-index:1000;
+            opacity: 0.8; /* 设置透明度（0.7 表示 70% 不透明） */
+            width: 160px; /* 设置按钮宽度 */
+            height: 70px; /* 设置按钮高度 */
+            /*cursor: url('C:/Users/admin/Desktop/IMG_20231013_164230.jpg'), auto;*/
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <!-- 自定义按钮 -->
+    <button id="custom-button">创建标志点</button>
+    <button id="buttonExit">退出登录</button>
+    <button id="buttonHome">个人主页</button>
+</body>
+<script type="text/javascript"
+    src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=tg72P5G7323hTWbtxkAEMPqD9Gw7DSz7"></script>
+<script>
+    var buttonExit = document.getElementById("buttonExit");
+    var buttonHome = document.getElementById("buttonHome");
+
+    var userID = localStorage.getItem("userID");
+    var username = localStorage.getItem("username");
+
+    var map = new BMapGL.Map("container");
+    var centerPoint;
+    if(localStorage.getItem("lng")){
+        centerPoint = new BMapGL.Point(localStorage.getItem("lng"),localStorage.getItem("lat"));
+        localStorage.removeItem("lng");
+        localStorage.removeItem("lng");
+    }
+    else{
+        centerPoint = new BMapGL.Point(116.404, 39.915);
+    }
+    map.centerAndZoom(centerPoint, 15);
+    map.enableScrollWheelZoom(true);
+    map.setHeading(64.5);
+    map.setTilt(73);
+
+
+
+
+    //var markers = []; // 用于存储所有的marker
+    //var markerIdCounter = 0; // 用于生成唯一的marker ID
+
+    fetch('/api/spots/getAllSpots', {
+      		method: 'GET',
+      		headers: {
+        	'Content-Type': 'application/json'
+            },
+    	})
+        .then(response => {
+            if (response.status == 200) {
+                return response.json();
+            } else {
+                throw new Error('失败');
+            }
+        })
+        .then(data =>{
+            data.forEach(coordinate => {
+                var point = new BMapGL.Point(coordinate.lng,coordinate.lat);
+                var marker = new BMapGL.Marker(point);
+                map.addOverlay(marker);
+                marker.addEventListener("click", function () {
+                    localStorage.setItem("lng",coordinate.lng);
+                    localStorage.setItem("lat",coordinate.lat);
+                    if(localStorage.getItem("username")) {
+                        window.location.href = "displaySigned.html";
+                    }
+                    else
+                        window.location.href = "displayUnsigned.html";
+                });
+            })
+        })
+        .catch(error => {// 处理失败或请求错误
+            alert("失败");
+        });
+
+    // 添加点击事件到按钮
+    var button = document.getElementById("custom-button");
+    button.addEventListener("click", function () {
+        //var infoWindowContent = "这是一个标志物的悬浮窗内容";
+            //alert(map.getDefaultCursor());
+            map.setDefaultCursor("crosshair");
+            //alert(map.getDefaultCursor());
+            //var infoWindow = new BMapGL.InfoWindow(infoWindowContent);
+            map.addEventListener('click', handleClick);
+
+            function handleClick(e) {
+                var pointlng = e.latlng.lng;
+                var pointlat = e.latlng.lat;
+                var point1 = new BMapGL.Point(pointlng, pointlat);
+                //var thisMarkerIdCounter = markerIdCounter;
+                //markerIdCounter++;
+                //var markerId = "marker_" + thisMarkerIdCounter; // 生成唯一的marker ID
+                var marker = new BMapGL.Marker(point1);
+                map.addOverlay(marker);
+
+                /*markers[thisMarkerIdCounter] = new BMapGL.Marker(point1);
+                markers[thisMarkerIdCounter].Id = markerId;// 为marker设置ID属性
+                map.addOverlay(markers[thisMarkerIdCounter]);*/
+
+
+                map.removeEventListener('click', handleClick);
+                map.setDefaultCursor("url(https://webmap0.bdimg.com/image/api/openhand.cur) 8 8,default");
+                marker.addEventListener("click", function () {
+
+                    localStorage.setItem("lng",e.latlng.lng);
+                    localStorage.setItem("lat",e.latlng.lat);
+                    if(localStorage.getItem("username")) {
+                        window.location.href = "displaySigned.html";
+                    }
+                    else
+                        window.location.href = "displayUnsigned.html";
+                });
+                localStorage.setItem("lng",pointlng);
+                localStorage.setItem("lat",pointlat);
+
+                var markerData={
+                    lng:pointlng,
+                    lat:pointlat
+                }
+                fetch('/api/spots/create', {
+      		        method: 'POST',
+      		        headers: {
+        	        'Content-Type': 'application/json'
+                    },
+                    body:JSON.stringify(markerData)
+    	        })
+                //map.setDefaultCursor("default");
+
+
+
+                /*.then(response => {
+                    if (response.status == 200) {
+                        alert("成功！");
+                    } else {
+                        throw new Error('失败');
+                    }
+                })
+
+                .catch(error => {// 处理失败或请求错误
+                    alert("失败");
+                });
+
+
+                location.reload();*/
+
+
+
+                /*marker.addEventListener("click", function () {
+                    localStorage.setItem("lng",pointlng);
+                    localStorage.setItem("lat",pointlat);
+                    if(localStorage.getItem("userID")) {
+                        window.location.href = "C:/Users/admin/Desktop/软件工程/displaySigned.html";
+                    }
+                    else
+                        window.location.href = "C:/Users/admin/Desktop/软件工程/displayUnsigned.html";
+                });*/
+            }
+
+    });
+    buttonExit.addEventListener('click',function (){
+        localStorage.removeItem("username");
+        localStorage.removeItem("userID");
+        window.location.href = "indexUnsigned.html";
+    })
+    buttonHome.addEventListener('click',function (){
+        window.location.href = "personalHomepage.html";
+    })
+
+    /*var JsUrl;
+    fetch('/api/guests/map', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.url) {
+            JsUrl = response.url;
+        } else {
+            throw new Error('获取数据失败');
+        }
+    })
+    .catch(error => {
+        alert("请求失败！");
+    });
+    JsUrl = "c:\\Users\\admin\\Desktop\\软件工程\\data\\.js\\public.js";
+    // 创建一个新的script标签
+    var script = document.createElement("script");
+    // 设置script标签的src属性为获取到的URL
+    script.src = JsUrl;
+    // 将script标签添加到<body>元素的末尾，即在所有已存在的script标签之后
+    document.body.appendChild(script);*/
+
+</script>
+<!--script type="text/javascript" src="c:\Users\admin\Desktop\软件工程\data\.js\public.js"></script-->
+
+</html>

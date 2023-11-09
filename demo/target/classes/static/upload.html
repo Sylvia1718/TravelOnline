@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>图片上传和内容提交</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 500px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding-left: 40px;
+            padding-right: 40px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="file"],
+        input[type="text"],
+        textarea {
+            
+            width: 96.67%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .preview {
+            max-width: 100%;
+            max-height: 200px;
+        }
+
+        input[type="submit"] {
+            position: relative;
+            left: 50%;
+            transform: translate(-50%);
+            background-color: #3c9bc4;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        #image1{
+            display: block; /* 确保元素以块级元素显示 */
+            margin: 0 auto; /* 设置左右外边距为auto，使元素水平居中 */
+			height:50px;
+			
+			
+		}
+        #title0{
+            text-align:center;
+        }
+        .title1{
+            text-align:center;
+			color: #3c9bc4;
+            font-weight: 800;
+
+		}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="title0">上&nbsp;&nbsp;传</h1>
+        <image id="image1" src="title3.png"/>
+        <!--h3 class="title1">游&nbsp;迹&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cloudtraveller</h3-->
+        <span>&nbsp;</span>
+        <span>&nbsp;</span>
+        <form id="submission-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image">选择图片：</label>
+                <span>&nbsp;</span>
+                <input type="file" id="image" accept="image/*" required>
+            </div>
+
+            <div class="form-group">
+                <label for="title">标题：</label>
+                <span>&nbsp;</span>
+                <input type="text" id="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">内容：</label>
+                <span>&nbsp;</span>
+                <textarea id="content" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <img id="image-preview" class="preview">
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="上传" id="submit">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        var userID = localStorage.getItem("userID");
+        var username = localStorage.getItem("username");
+        var lng = localStorage.getItem("lng");
+        var lat = localStorage.getItem("lat");
+
+        const imageInput = document.getElementById("image");
+        const imagePreview = document.getElementById("image-preview");
+        
+        var submit = document.getElementById("submit");
+        
+        
+
+        
+
+        submit.addEventListener('click',function(){
+            var title = document.getElementById("title").value;
+            var content = document.getElementById("content").value;
+
+            if(imageInput.files[0] && title!="" && content!=""){
+                var myHeaders = new Headers();
+                myHeaders.append("username", "");
+
+                var formdata = new FormData();
+                formdata.append("username", username);
+                formdata.append("lat", lat);
+                formdata.append("lng", lng);
+                formdata.append("depict", content);
+                formdata.append("image", imageInput.files[0]);
+                formdata.append("title", title);
+
+                var requestOptions = {
+                    method: 'POST',
+                    headers: myHeaders,
+                    body: formdata,
+                    redirect: 'follow'
+                };
+
+                fetch("http://localhost:8080/api/passages/create", requestOptions)
+                //.then(response => response.text())
+                .then(response=>{
+                    alert(1);
+                })
+
+                .catch(error => console.log('error', error));
+            }
+            alert("上传成功");
+            localStorage.setItem("lng",lng);
+            localStorage.setItem("lat",lat);
+            window.open("displaySigned.html") ;
+
+        })
+    
+    
+        imageInput.addEventListener("change", () => {
+            if (imageInput.files && imageInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            }
+        });
+        
+
+        // 表单提交部分保持不变
+    </script>
+</body>
+</html>
